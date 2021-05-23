@@ -7,7 +7,7 @@ import (
 
 // expression represents all possible expandable types
 type expression interface {
-	expand() ([][]byte, error)
+	expand() [][]byte
 }
 
 // getExpression returns expression depends on the input
@@ -49,10 +49,11 @@ func getExpression(in []byte) expression {
 	}
 	rSeq := make([]rune, len(args))
 	for i, a := range args {
-		if len(a) != 1 {
+		r := []rune(string(a))
+		if len(r) != 1 {
 			return none{orig}
 		}
-		rSeq[i] = rune(a[0])
+		rSeq[i] = r[0]
 	}
 
 	return runes{rSeq}

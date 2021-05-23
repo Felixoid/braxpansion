@@ -1,6 +1,7 @@
 package braxpansion
 
 import (
+	"bytes"
 	"strings"
 	"testing"
 
@@ -20,8 +21,25 @@ func TestExpandString(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		result, err := ExpandString(tt.in)
-		assert.NoError(t, err)
-		assert.Equal(t, tt.out, strings.Join(result, " "), "input %q", tt.in)
+		result := strings.Join(ExpandString(tt.in), " ")
+		assert.Equal(t, tt.out, result, "input %q", tt.in)
+	}
+}
+
+func TestExpandBytes(t *testing.T) {
+	type data struct {
+		in  []byte
+		out []byte
+	}
+
+	tests := []data{
+		{[]byte("a{b c}d"), []byte("a{b c}d")},
+		{[]byte("a{b,c}d"), []byte("abd acd")},
+		{[]byte("a{b,c}d a{b c}d"), []byte("abd acd a{b c}d")},
+	}
+
+	for _, tt := range tests {
+		result := bytes.Join(ExpandBytes(tt.in), []byte(" "))
+		assert.Equal(t, tt.out, result, "input %q", tt.in)
 	}
 }

@@ -11,9 +11,9 @@ type numbers struct {
 	seq  []int
 }
 
-func (n numbers) expand() ([][]byte, error) {
+func (n numbers) expand() [][]byte {
 	if len(n.seq) != len(n.orig) {
-		return nil, fmt.Errorf("the length of original and parsed arguments aren't the same: %d != %d", len(n.orig), len(n.seq))
+		panic(fmt.Sprintf("the length of original and parsed arguments aren't the same: %d != %d", len(n.orig), len(n.seq)))
 	}
 	first := n.seq[0]
 	last := n.seq[1]
@@ -23,21 +23,15 @@ func (n numbers) expand() ([][]byte, error) {
 		step = n.seq[2]
 		if step == 0 {
 			b := new(bytes.Buffer)
+			b.Grow(len(n.orig[0]) + len(n.orig[1]) + 7)
+			b.WriteRune('{')
 			for _, o := range n.orig {
-				_, err := b.Write(o)
-				if err != nil {
-					return nil, err
-				}
-				_, err = b.Write(dots)
-				if err != nil {
-					return nil, err
-				}
+				b.Write(o)
+				b.Write(dots)
 			}
-			_, err := b.WriteRune('0')
-			if err != nil {
-				return nil, err
-			}
-			return [][]byte{b.Bytes()}, nil
+			b.WriteRune('0')
+			b.WriteRune('}')
+			return [][]byte{b.Bytes()}
 		}
 		if step < 0 {
 			reversed = true
@@ -81,5 +75,5 @@ func (n numbers) expand() ([][]byte, error) {
 		}
 	}
 
-	return result, nil
+	return result
 }

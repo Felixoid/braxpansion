@@ -5,6 +5,6 @@ type none struct {
 	body []byte
 }
 
-func (n none) expand() ([][]byte, error) {
-	return [][]byte{n.body}, nil
+func (n none) expand() [][]byte {
+	return [][]byte{n.body}
 }

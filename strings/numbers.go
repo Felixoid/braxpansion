@@ -8,10 +8,9 @@ type numbers struct {
 	seq  []int
 }
 
-func (n numbers) expand() ([]string, error) {
+func (n numbers) expand() []string {
 	if len(n.seq) != len(n.orig) {
-		// This is some error
-		return nil, fmt.Errorf("the length of original and parsed arguments aren't the same: %d != %d", len(n.orig), len(n.seq))
+		panic(fmt.Sprintf("the length of original and parsed arguments aren't the same: %d != %d", len(n.orig), len(n.seq)))
 	}
 	first := n.seq[0]
 	last := n.seq[1]
@@ -20,7 +19,7 @@ func (n numbers) expand() ([]string, error) {
 	if len(n.seq) == 3 {
 		step = n.seq[2]
 		if step == 0 {
-			return []string{fmt.Sprintf("%s..%s..0", n.orig[0], n.orig[1])}, nil
+			return []string{fmt.Sprintf("{%s..%s..0}", n.orig[0], n.orig[1])}
 		}
 		if step < 0 {
 			reversed = true
@@ -64,5 +63,5 @@ func (n numbers) expand() ([]string, error) {
 		}
 	}
 
-	return result, nil
+	return result
 }

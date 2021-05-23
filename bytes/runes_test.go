@@ -10,18 +10,17 @@ import (
 func TestExpandRunes(t *testing.T) {
 	type data struct {
 		in     runes
-		result string
+		result []byte
 	}
 
 	tests := []data{
-		{runes{[]rune{'a', 'Z'}}, "a ` _ ^ ] \\ [ Z"},
-		{runes{[]rune{'a', 'e'}}, "a b c d e"},
-		{runes{[]rune{'😄', '😁'}}, "😄 😃 😂 😁"},
+		{runes{[]rune{'a', 'Z'}}, []byte("a ` _ ^ ] \\ [ Z")},
+		{runes{[]rune{'a', 'e'}}, []byte("a b c d e")},
+		{runes{[]rune{'😄', '😁'}}, []byte("😄 😃 😂 😁")},
 	}
 
 	for _, tt := range tests {
-		result, err := tt.in.expand()
-		assert.NoError(t, err)
-		assert.Equal(t, tt.result, string(bytes.Join(result, space)), "input %q", tt.in)
+		result := bytes.Join(tt.in.expand(), space)
+		assert.Equal(t, tt.result, result, "input %q", tt.in)
 	}
 }

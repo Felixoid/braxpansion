@@ -7,7 +7,7 @@ import (
 
 // expression represents all possible expandable types
 type expression interface {
-	expand() ([]string, error)
+	expand() []string
 }
 
 // getExpression returns expression depends on the input
