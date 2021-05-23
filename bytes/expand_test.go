@@ -36,6 +36,7 @@ func TestGetPair(t *testing.T) {
 		{[]byte("x{12,{}}{{,13}"), 1, 7},
 		{[]byte("{x{12,{}}{{,13}"), 2, 8},
 		{[]byte("{{x{12,{}}{{,13}"), 3, 9},
+		{[]byte("}some{"), -1, -1},
 	}
 
 	for _, tt := range tests {

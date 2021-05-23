@@ -66,10 +66,8 @@ func expandSingle(in []byte) ([][]byte, error) {
 		b := new(bytes.Buffer)
 		b.Grow(len(in))
 		for i := range exps {
-			_, err := b.Write(exps[i][curMult[i]])
-			if err != nil {
-				return [][]byte{}, err
-			}
+			// Buffer.WriteString always returns nil as error
+			b.Write(exps[i][curMult[i]])
 		}
 		for j := len(curMult) - 1; 0 <= j; j-- {
 			curMult[j]++
@@ -84,6 +82,8 @@ func expandSingle(in []byte) ([][]byte, error) {
 	return result, nil
 }
 
+// getPair returns the top level expression. If the first `{` doesn't have the pair,
+// it recursively executed for the substring after it
 func getPair(in []byte) (start, stop int) {
 	start = bytes.IndexRune(in, '{')
 	stop = bytes.IndexRune(in, '}')

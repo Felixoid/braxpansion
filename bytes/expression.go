@@ -10,8 +10,7 @@ type expression interface {
 	expand() ([][]byte, error)
 }
 
-// getExpression returns the top level expression. If the first `{` doesn't have the pair,
-// it recursively executed for the substring after it
+// getExpression returns expression depends on the input
 func getExpression(in []byte) expression {
 	orig := in
 	in = in[1 : len(in)-1]

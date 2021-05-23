@@ -1,6 +1,8 @@
 package strings
 
-import "strings"
+import (
+	"strings"
+)
 
 const (
 	coma  = ","
@@ -64,10 +66,8 @@ func expandSingle(in string) ([]string, error) {
 		b := new(strings.Builder)
 		b.Grow(len(in))
 		for i := range exps {
-			_, err := b.WriteString(exps[i][curMult[i]])
-			if err != nil {
-				return []string{}, err
-			}
+			// Builder.WriteString always returns nil as error
+			b.WriteString(exps[i][curMult[i]])
 		}
 		for j := len(curMult) - 1; 0 <= j; j-- {
 			curMult[j]++
@@ -82,6 +82,8 @@ func expandSingle(in string) ([]string, error) {
 	return result, nil
 }
 
+// getPair returns the top level expression. If the first `{` doesn't have the pair,
+// it recursively executed for the substring after it
 func getPair(in string) (start, stop int) {
 	start = strings.IndexRune(in, '{')
 	stop = strings.IndexRune(in, '}')
