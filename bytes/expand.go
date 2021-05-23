@@ -64,6 +64,7 @@ func expandSingle(in []byte) ([][]byte, error) {
 	curMult := make([]int, len(exps))
 	for i := 0; i < resLen; i++ {
 		b := new(bytes.Buffer)
+		b.Grow(len(in))
 		for i := range exps {
 			_, err := b.Write(exps[i][curMult[i]])
 			if err != nil {
