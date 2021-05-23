@@ -20,7 +20,8 @@ func TestExpandString(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		result := strings.Join(ExpandString(tt.in), " ")
-		assert.Equal(t, tt.out, result, "input %q", tt.in)
+		result, err := ExpandString(tt.in)
+		assert.NoError(t, err)
+		assert.Equal(t, tt.out, strings.Join(result, " "), "input %q", tt.in)
 	}
 }

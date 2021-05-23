@@ -19,7 +19,8 @@ func TestExpandList(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		result := strings.Join(tt.in.expand(), " ")
-		assert.Equal(t, tt.result, result, "input %q", tt.in)
+		result, err := tt.in.expand()
+		assert.NoError(t, err)
+		assert.Equal(t, tt.result, strings.Join(result, space), "input %q", tt.in)
 	}
 }

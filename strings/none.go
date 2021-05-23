@@ -5,6 +5,6 @@ type none struct {
 	body string
 }
 
-func (n none) expand() []string {
-	return []string{n.body}
+func (n none) expand() ([]string, error) {
+	return []string{n.body}, nil
 }

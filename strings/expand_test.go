@@ -19,8 +19,9 @@ func TestExpandSingle(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		result := strings.Join(expandSingle(tt.in), " ")
-		assert.Equal(t, tt.out, result, "input %q", tt.in)
+		result, err := expandSingle(tt.in)
+		assert.NoError(t, err)
+		assert.Equal(t, tt.out, strings.Join(result, space), "input %q", tt.in)
 	}
 }
 

@@ -5,7 +5,7 @@ type runes struct {
 	seq []rune
 }
 
-func (r runes) expand() []string {
+func (r runes) expand() ([]string, error) {
 	first := int(r.seq[0])
 	second := int(r.seq[1])
 	step := 1
@@ -21,5 +21,5 @@ func (r runes) expand() []string {
 	}
 	result = append(result, string(rune(second)))
 
-	return result
+	return result, nil
 }

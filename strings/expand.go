@@ -2,19 +2,29 @@ package strings
 
 import "strings"
 
+const (
+	coma  = ","
+	dots  = ".."
+	space = " "
+)
+
 // Expand takes the string contains the shell expansion expression and returns list of strings after
 // they are expanded. As in shells, each word is processed separately, so `12{1,2,3,4}as ds{1..3}22` produces `121as 122as 123as 124as ds122 ds222 ds322`
-func Expand(in string) []string {
+func Expand(in string) ([]string, error) {
 	fields := strings.Fields(in)
 	result := make([]string, 0, len(fields))
 	for _, f := range fields {
-		result = append(result, expandSingle(f)...)
+		expanded, err := expandSingle(f)
+		result = append(result, expanded...)
+		if err != nil {
+			return result, err
+		}
 	}
-	return result
+	return result, nil
 }
 
 // expandSingle expands single field and multiplies all braces pairs in it with plain text and each other.
-func expandSingle(in string) []string {
+func expandSingle(in string) ([]string, error) {
 	start, stop := getPair(in)
 	cur := 0
 	exps := make([][]string, 0)
@@ -29,8 +39,11 @@ func expandSingle(in string) []string {
 			exps = append(exps, []string{in[cur : start+cur]})
 			dimensions = append(dimensions, 1)
 		}
-		exp := getExpression(in[cur+start : cur+stop+1]).expand()
+		exp, err := getExpression(in[cur+start : cur+stop+1]).expand()
 		exps = append(exps, exp)
+		if err != nil {
+			return []string{}, err
+		}
 		dimensions = append(dimensions, len(exp))
 		resLen *= len(exp)
 		cur += stop + 1
@@ -50,7 +63,10 @@ func expandSingle(in string) []string {
 	for i := 0; i < resLen; i++ {
 		b := new(strings.Builder)
 		for i := range exps {
-			b.WriteString(exps[i][curMult[i]])
+			_, err := b.WriteString(exps[i][curMult[i]])
+			if err != nil {
+				return []string{}, err
+			}
 		}
 		for j := len(curMult) - 1; 0 <= j; j-- {
 			curMult[j]++
@@ -62,7 +78,7 @@ func expandSingle(in string) []string {
 		}
 		result[i] = b.String()
 	}
-	return result
+	return result, nil
 }
 
 func getPair(in string) (start, stop int) {

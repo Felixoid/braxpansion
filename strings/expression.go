@@ -7,7 +7,7 @@ import (
 
 // expression represents all possible expandable types
 type expression interface {
-	expand() []string
+	expand() ([]string, error)
 }
 
 // getExpression returns the top level expression. If the first `{` doesn't have the pair,
@@ -20,11 +20,11 @@ func getExpression(in string) expression {
 		return list{in}
 	}
 
-	if strings.Index(in, "..") == -1 {
+	if strings.Index(in, dots) == -1 {
 		return none{orig}
 	}
 
-	args := strings.Split(in, "..")
+	args := strings.Split(in, dots)
 	if len(args) != 2 && len(args) != 3 {
 		return none{orig}
 	}
