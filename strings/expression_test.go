@@ -20,6 +20,8 @@ func TestGetExpression(t *testing.T) {
 		{"{1..005..2}", numbers{[]string{"1", "005", "2"}, []int{1, 5, 2}}},
 		{"{1..a}", runes{seq: []rune{'1', 'a'}}},
 		{"{😁..👌}", runes{seq: []rune{'😁', '👌'}}},
+		{"{1..s..w}", none{"{1..s..w}"}},
+		{"{1..as}", none{"{1..as}"}},
 		{"{13323}", none{"{13323}"}},
 	}
 

@@ -19,10 +19,6 @@ func getExpression(in string) expression {
 		return list{in}
 	}
 
-	if strings.Index(in, dots) == -1 {
-		return none{orig}
-	}
-
 	args := strings.Split(in, dots)
 	if len(args) != 2 && len(args) != 3 {
 		return none{orig}
