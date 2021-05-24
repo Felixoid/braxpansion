@@ -57,6 +57,7 @@ func expandSingle(in string) []string {
 	curMult := make([]int, len(exps))
 	for i := 0; i < resLen; i++ {
 		b := new(strings.Builder)
+		// Optimization for pre-defined buffer length to avoid reallocations
 		b.Grow(len(in))
 		for i := range exps {
 			// Builder.WriteString always returns nil as error
