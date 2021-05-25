@@ -8,25 +8,16 @@ It contains the only public function `Expand(string) []string`, that expands she
 I couldn't find any descend library providing such functional with simply usage. Here are some benchmark results for [Braces](https://pkg.go.dev/mvdan.cc/sh@v2.6.4+incompatible/expand#Braces) and [gobrex](https://github.com/kujtimiihoxha/go-brace-expansion):
 
 ```
-go test -benchtime=10s -bench=. -benchmem ./...
-PASS
-ok   github.com/Felixoid/braxpansion 0.008s
+go test -benchtime=10s -bench=. -benchmem ./bench
 goos: linux
 goarch: amd64
-pkg: github.com/Felixoid/braxpansion/bytes
+pkg: github.com/Felixoid/braxpansion/bench
 cpu: AMD Ryzen 7 4800H with Radeon Graphics
-BenchmarkExpand-16        147090     75278 ns/op   44050 B/op     442 allocs/op
-BenchmarkGobrex-16         20718    575975 ns/op  184468 B/op    3315 allocs/op
-BenchmarkShExpand-16      204189     57862 ns/op   29984 B/op     334 allocs/op
+BenchmarkGobrex-16                 	  19832	   556680 ns/o  184319 B/op	   3315 allocs/op
+BenchmarkShExpand-16               	 252078	    52750 ns/o   29984 B/op	    334 allocs/op
+BenchmarkExpandString-16           	 183957	    61439 ns/o   29737 B/op	    439 allocs/op
+BenchmarkExpandBytes-16            	 182880	    71469 ns/o   44049 B/op	    442 allocs/op
+BenchmarkExpandBytesAsString-16    	 189706	    63163 ns/o   29801 B/op	    441 allocs/op
 PASS
-ok   github.com/Felixoid/braxpansion/bytes 42.107s
-goos: linux
-goarch: amd64
-pkg: github.com/Felixoid/braxpansion/strings
-cpu: AMD Ryzen 7 4800H with Radeon Graphics
-BenchmarkExpand-16        240991     54578 ns/op   29737 B/op     439 allocs/op
-BenchmarkGobrex-16         20318    588477 ns/op  184347 B/op    3315 allocs/op
-BenchmarkShExpand-16      204188     59507 ns/op   29984 B/op     334 allocs/op
-PASS
-ok   github.com/Felixoid/braxpansion/strings 44.335s
+ok  	github.com/Felixoid/braxpansion/bench	69.274s
 ```

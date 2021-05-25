@@ -20,7 +20,8 @@ func ExpandString(in string) []string {
 }
 
 // ExpandBytes takes the []byte contains the shell expansion expression and returns a slice of []byte after
-// they are expanded. As in shells, each word is processed separately, so `12{1,2,3,4}as ds{1..3}22` produces `121as 122as 123as 124as ds122 ds222 ds322`
+// they are expanded. As in shells, each word is processed separately, so `12{1,2,3,4}as ds{1..3}22` produces `121as 122as 123as 124as ds122 ds222 ds322`.
+// According to benchmark, it's better to convert []byte to string and use ExpandString.
 func ExpandBytes(in []byte) [][]byte {
 	return bytes.Expand(in)
 }
