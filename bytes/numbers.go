@@ -1,7 +1,6 @@
 package bytes
 
 import (
-	"bytes"
 	"fmt"
 )
 
@@ -11,9 +10,9 @@ type numbers struct {
 	seq  []int
 }
 
-func (n numbers) expand() ([][]byte, error) {
+func (n numbers) expand() [][]byte {
 	if len(n.seq) != len(n.orig) {
-		return nil, fmt.Errorf("the length of original and parsed arguments aren't the same: %d != %d", len(n.orig), len(n.seq))
+		panic(fmt.Sprintf("the length of original and parsed arguments aren't the same: %d != %d", len(n.orig), len(n.seq)))
 	}
 	first := n.seq[0]
 	last := n.seq[1]
@@ -22,22 +21,7 @@ func (n numbers) expand() ([][]byte, error) {
 	if len(n.seq) == 3 {
 		step = n.seq[2]
 		if step == 0 {
-			b := new(bytes.Buffer)
-			for _, o := range n.orig {
-				_, err := b.Write(o)
-				if err != nil {
-					return nil, err
-				}
-				_, err = b.Write(dots)
-				if err != nil {
-					return nil, err
-				}
-			}
-			_, err := b.WriteRune('0')
-			if err != nil {
-				return nil, err
-			}
-			return [][]byte{b.Bytes()}, nil
+			return [][]byte{[]byte(fmt.Sprintf("{%s..%s..0}", n.orig[0], n.orig[1]))}
 		}
 		if step < 0 {
 			reversed = true
@@ -81,5 +65,5 @@ func (n numbers) expand() ([][]byte, error) {
 		}
 	}
 
-	return result, nil
+	return result
 }

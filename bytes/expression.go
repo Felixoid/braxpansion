@@ -7,21 +7,16 @@ import (
 
 // expression represents all possible expandable types
 type expression interface {
-	expand() ([][]byte, error)
+	expand() [][]byte
 }
 
-// getExpression returns the top level expression. If the first `{` doesn't have the pair,
-// it recursively executed for the substring after it
+// getExpression returns expression depends on the input
 func getExpression(in []byte) expression {
 	orig := in
 	in = in[1 : len(in)-1]
 	// Even if {,..g} is used, it's interpreted as a list
 	if bytes.IndexRune(in, ',') != -1 {
 		return list{in}
-	}
-
-	if bytes.Index(in, []byte("..")) == -1 {
-		return none{orig}
 	}
 
 	args := bytes.Split(in, dots)
@@ -50,10 +45,11 @@ func getExpression(in []byte) expression {
 	}
 	rSeq := make([]rune, len(args))
 	for i, a := range args {
-		if len(a) != 1 {
+		r := []rune(string(a))
+		if len(r) != 1 {
 			return none{orig}
 		}
-		rSeq[i] = rune(a[0])
+		rSeq[i] = r[0]
 	}
 
 	return runes{rSeq}

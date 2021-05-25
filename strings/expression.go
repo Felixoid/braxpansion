@@ -7,21 +7,16 @@ import (
 
 // expression represents all possible expandable types
 type expression interface {
-	expand() ([]string, error)
+	expand() []string
 }
 
-// getExpression returns the top level expression. If the first `{` doesn't have the pair,
-// it recursively executed for the substring after it
+// getExpression returns expression depends on the input
 func getExpression(in string) expression {
 	orig := in
 	in = in[1 : len(in)-1]
 	// Even if {,..g} is used, it's interpreted as a list
 	if strings.IndexRune(in, ',') != -1 {
 		return list{in}
-	}
-
-	if strings.Index(in, dots) == -1 {
-		return none{orig}
 	}
 
 	args := strings.Split(in, dots)

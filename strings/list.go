@@ -7,7 +7,7 @@ type list struct {
 	body string
 }
 
-func (l list) expand() ([]string, error) {
+func (l list) expand() []string {
 	getNext := func(b string) int {
 		nextComa := strings.IndexRune(b, ',')
 		if nextComa == -1 {
@@ -36,11 +36,8 @@ func (l list) expand() ([]string, error) {
 				nextComa = coma + stop + getNext(l.body[coma+stop:])
 				break
 			}
-			expanded, err := expandSingle(l.body[coma:nextComa])
+			expanded := expandSingle(l.body[coma:nextComa])
 			result = append(result, expanded...)
-			if err != nil {
-				return result, err
-			}
 		}
 
 		if nextComa == len(l.body) {
@@ -49,5 +46,5 @@ func (l list) expand() ([]string, error) {
 
 		coma = nextComa + 1
 	}
-	return result, nil
+	return result
 }

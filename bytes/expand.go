@@ -12,21 +12,17 @@ var (
 
 // Expand takes the []byte contains the shell expansion expression and returns a slice of []byte after
 // they are expanded. As in shells, each word is processed separately, so `12{1,2,3,4}as ds{1..3}22` produces `121as 122as 123as 124as ds122 ds222 ds322`
-func Expand(in []byte) ([][]byte, error) {
+func Expand(in []byte) [][]byte {
 	fields := bytes.Fields(in)
 	result := make([][]byte, 0, len(fields))
 	for _, f := range fields {
-		expanded, err := expandSingle(f)
-		result = append(result, expanded...)
-		if err != nil {
-			return result, err
-		}
+		result = append(result, expandSingle(f)...)
 	}
-	return result, nil
+	return result
 }
 
 // expandSingle expands single field and multiplies all braces pairs in it with plain text and each other.
-func expandSingle(in []byte) ([][]byte, error) {
+func expandSingle(in []byte) [][]byte {
 	start, stop := getPair(in)
 	cur := 0
 	exps := make([][][]byte, 0)
@@ -41,11 +37,8 @@ func expandSingle(in []byte) ([][]byte, error) {
 			exps = append(exps, [][]byte{in[cur : start+cur]})
 			dimensions = append(dimensions, 1)
 		}
-		exp, err := getExpression(in[cur+start : cur+stop+1]).expand()
+		exp := getExpression(in[cur+start : cur+stop+1]).expand()
 		exps = append(exps, exp)
-		if err != nil {
-			return [][]byte{}, err
-		}
 		dimensions = append(dimensions, len(exp))
 		resLen *= len(exp)
 		cur += stop + 1
@@ -66,10 +59,8 @@ func expandSingle(in []byte) ([][]byte, error) {
 		b := new(bytes.Buffer)
 		b.Grow(len(in))
 		for i := range exps {
-			_, err := b.Write(exps[i][curMult[i]])
-			if err != nil {
-				return [][]byte{}, err
-			}
+			// Buffer.WriteString always returns nil as error
+			b.Write(exps[i][curMult[i]])
 		}
 		for j := len(curMult) - 1; 0 <= j; j-- {
 			curMult[j]++
@@ -81,9 +72,11 @@ func expandSingle(in []byte) ([][]byte, error) {
 		}
 		result[i] = b.Bytes()
 	}
-	return result, nil
+	return result
 }
 
+// getPair returns the top level expression. If the first `{` doesn't have the pair,
+// it recursively executed for the substring after it
 func getPair(in []byte) (start, stop int) {
 	start = bytes.IndexRune(in, '{')
 	stop = bytes.IndexRune(in, '}')

@@ -1,6 +1,8 @@
 package strings
 
-import "strings"
+import (
+	"strings"
+)
 
 const (
 	coma  = ","
@@ -10,21 +12,17 @@ const (
 
 // Expand takes the string contains the shell expansion expression and returns list of strings after
 // they are expanded. As in shells, each word is processed separately, so `12{1,2,3,4}as ds{1..3}22` produces `121as 122as 123as 124as ds122 ds222 ds322`
-func Expand(in string) ([]string, error) {
+func Expand(in string) []string {
 	fields := strings.Fields(in)
 	result := make([]string, 0, len(fields))
 	for _, f := range fields {
-		expanded, err := expandSingle(f)
-		result = append(result, expanded...)
-		if err != nil {
-			return result, err
-		}
+		result = append(result, expandSingle(f)...)
 	}
-	return result, nil
+	return result
 }
 
 // expandSingle expands single field and multiplies all braces pairs in it with plain text and each other.
-func expandSingle(in string) ([]string, error) {
+func expandSingle(in string) []string {
 	start, stop := getPair(in)
 	cur := 0
 	exps := make([][]string, 0)
@@ -39,11 +37,8 @@ func expandSingle(in string) ([]string, error) {
 			exps = append(exps, []string{in[cur : start+cur]})
 			dimensions = append(dimensions, 1)
 		}
-		exp, err := getExpression(in[cur+start : cur+stop+1]).expand()
+		exp := getExpression(in[cur+start : cur+stop+1]).expand()
 		exps = append(exps, exp)
-		if err != nil {
-			return []string{}, err
-		}
 		dimensions = append(dimensions, len(exp))
 		resLen *= len(exp)
 		cur += stop + 1
@@ -62,12 +57,11 @@ func expandSingle(in string) ([]string, error) {
 	curMult := make([]int, len(exps))
 	for i := 0; i < resLen; i++ {
 		b := new(strings.Builder)
+		// Optimization for pre-defined buffer length to avoid reallocations
 		b.Grow(len(in))
 		for i := range exps {
-			_, err := b.WriteString(exps[i][curMult[i]])
-			if err != nil {
-				return []string{}, err
-			}
+			// Builder.WriteString always returns nil as error
+			b.WriteString(exps[i][curMult[i]])
 		}
 		for j := len(curMult) - 1; 0 <= j; j-- {
 			curMult[j]++
@@ -79,9 +73,11 @@ func expandSingle(in string) ([]string, error) {
 		}
 		result[i] = b.String()
 	}
-	return result, nil
+	return result
 }
 
+// getPair returns the top level expression. If the first `{` doesn't have the pair,
+// it recursively executed for the substring after it
 func getPair(in string) (start, stop int) {
 	start = strings.IndexRune(in, '{')
 	stop = strings.IndexRune(in, '}')
