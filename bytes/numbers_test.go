@@ -16,11 +16,14 @@ func TestExpandNumbers(t *testing.T) {
 	tests := []data{
 		{getExpression([]byte("{-10..1}")), []byte("-10 -9 -8 -7 -6 -5 -4 -3 -2 -1 0 1")},
 		{getExpression([]byte("{1..5}")), []byte("1 2 3 4 5")},
+		{getExpression([]byte("{1..1}")), []byte("1")},
 		{getExpression([]byte("{1..005..2}")), []byte("001 003 005")},
+		{getExpression([]byte("{001..5..2}")), []byte("001 003 005")},
 		{getExpression([]byte("{1..005..-002}")), []byte("0005 0003 0001")},
 		{getExpression([]byte("{3..-02..3}")), []byte("003 000")},
 		{getExpression([]byte("{3..-02..-3}")), []byte("000 003")},
 		{getExpression([]byte("{3..-03..-3}")), []byte("-03 000 003")},
+		{getExpression([]byte("{3..-03..0}")), []byte("{3..-03..0}")},
 	}
 
 	for _, tt := range tests {
@@ -29,4 +32,9 @@ func TestExpandNumbers(t *testing.T) {
 		result := bytes.Join(tt.in.expand(), space)
 		assert.Equal(t, tt.result, result, "input %q", tt.in)
 	}
+}
+
+func TestNumbersPanics(t *testing.T) {
+	tt := numbers{orig: [][]byte{[]byte("-1"), []byte("-2"), []byte("1")}, seq: []int{-1, -2}}
+	assert.Panics(t, func() { tt.expand() })
 }

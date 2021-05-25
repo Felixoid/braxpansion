@@ -1,7 +1,6 @@
 package bytes
 
 import (
-	"bytes"
 	"fmt"
 )
 
@@ -22,16 +21,7 @@ func (n numbers) expand() [][]byte {
 	if len(n.seq) == 3 {
 		step = n.seq[2]
 		if step == 0 {
-			b := new(bytes.Buffer)
-			b.Grow(len(n.orig[0]) + len(n.orig[1]) + 7)
-			b.WriteRune('{')
-			for _, o := range n.orig {
-				b.Write(o)
-				b.Write(dots)
-			}
-			b.WriteRune('0')
-			b.WriteRune('}')
-			return [][]byte{b.Bytes()}
+			return [][]byte{[]byte(fmt.Sprintf("{%s..%s..0}", n.orig[0], n.orig[1]))}
 		}
 		if step < 0 {
 			reversed = true
