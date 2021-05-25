@@ -19,10 +19,6 @@ func getExpression(in []byte) expression {
 		return list{in}
 	}
 
-	if bytes.Index(in, []byte("..")) == -1 {
-		return none{orig}
-	}
-
 	args := bytes.Split(in, dots)
 	if len(args) != 2 && len(args) != 3 {
 		return none{orig}

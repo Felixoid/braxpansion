@@ -20,6 +20,8 @@ func TestGetExpression(t *testing.T) {
 		{[]byte("{1..005..2}"), numbers{[][]byte{[]byte("1"), []byte("005"), []byte("2")}, []int{1, 5, 2}}},
 		{[]byte("{1..a}"), runes{seq: []rune{'1', 'a'}}},
 		{[]byte("{😁..👌}"), runes{seq: []rune{'😁', '👌'}}},
+		{[]byte("{1..s..w}"), none{[]byte("{1..s..w}")}},
+		{[]byte("{1..as}"), none{[]byte("{1..as}")}},
 		{[]byte("{13323}"), none{[]byte("{13323}")}},
 	}
 
