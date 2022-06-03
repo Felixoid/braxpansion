@@ -43,4 +43,6 @@ jobs:
         go test -v ./...
 
     - name: Benchmark
-      run: go test -benchtime=2s -bench=. -benchmem ./bench
+      run: |
+        cd ./bench
+        go test -benchtime=2s -bench=. -benchmem
