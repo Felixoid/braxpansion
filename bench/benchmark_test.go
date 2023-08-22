@@ -10,14 +10,14 @@ import (
 	"mvdan.cc/sh/syntax"
 )
 
-var input = []string{
-	"1{b..e}2{a..c}3",
-	"232{ad,fdff,wwwww,asdasd{02..3}}{z..A}",
-	"dfi mon-mon{i,y,ie} {13..050}",
-	"metric.{us,ru,en,de,dk,gb,in}server{01..12}.cpu.{0..3}.{idle,sys,user}",
+var input = map[string]string{
+	"Tiny":  "1{b..e}2{a..c}3",
+	"Small": "232{ad,fdff,wwwww,asdasd{02..3}}{Z..a}",
+	"Big":   "dfi mon-mon{i,y,ie{a..c}}{13..050}",
+	"Huge":  "metric.{us,ru,en,de,dk,gb,in}server{01..12}.cpu.{0..3}.{idle,sys,user}",
 }
 
-var inBytes = stringsToBytesSlice(input)
+var inBytes = make(map[string][]byte, len(input))
 
 func stringsToBytesSlice(in []string) [][]byte {
 	out := make([][]byte, len(in))
@@ -54,7 +54,11 @@ func bytesAsString(in []byte) [][]byte {
 }
 
 func BenchmarkExpand(b *testing.B) {
-	benchSize := []string{"Tiny", "Small", "Big", "Huge"}
+	benchName := []string{"Tiny", "Small", "Big", "Huge"}
+	for name, expr := range input {
+		inBytes[name] = []byte(expr)
+	}
+
 	type benchType struct {
 		name           string
 		stringFunction func(string) []string
@@ -70,22 +74,17 @@ func BenchmarkExpand(b *testing.B) {
 		{"ShExpand", shBraceExpansion, nil},
 	}
 
-	for s, name := range benchSize {
-		s++
+	for _, name := range benchName {
 		for _, bench := range benchmarks {
 			b.Run(name+"-"+bench.name, func(b *testing.B) {
 				if bench.stringFunction != nil {
 					for i := 0; i < b.N; i++ {
-						for _, in := range input[:s] {
-							bench.stringFunction(in)
-						}
+						bench.stringFunction(input[name])
 					}
 				}
 				if bench.bytesFunction != nil {
 					for i := 0; i < b.N; i++ {
-						for _, in := range inBytes[:s] {
-							bench.bytesFunction(in)
-						}
+						bench.bytesFunction(inBytes[name])
 					}
 				}
 			})
