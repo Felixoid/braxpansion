@@ -17,6 +17,8 @@ func TestExpand(t *testing.T) {
 		{"a{b c}d", "a{b c}d"},
 		{"a{b,c}d", "abd acd"},
 		{"a{b,c}d a{b c}d", "abd acd a{b c}d"},
+		{"a{{b,c}d a{b c}d", "a{bd a{cd a{b c}d"},
+		{"a{{b,c}}d a{b c}d", "a{b}d a{c}d a{b c}d"},
 	}
 
 	for _, tt := range tests {
@@ -32,9 +34,14 @@ func TestExpandSingle(t *testing.T) {
 	}
 
 	tests := []data{
-		{in: "{2..3}", out: "2 3"},
-		{in: "1{b..e}2{a..c}3", out: "1b2a3 1b2b3 1b2c3 1c2a3 1c2b3 1c2c3 1d2a3 1d2b3 1d2c3 1e2a3 1e2b3 1e2c3"},
-		{in: "as{12,32}{a..c}{2}", out: "as12a{2} as12b{2} as12c{2} as32a{2} as32b{2} as32c{2}"},
+		{"{2..3}", "2 3"},
+		{"a{{2..3}}b", "a{2}b a{3}b"},
+		{"a{{{2..3}}}b", "a{{2}}b a{{3}}b"},
+		{"a{{2}}b", "a{{2}}b"},
+		{"a{{{2}}}b", "a{{{2}}}b"},
+		{"a{{1,4{2..3}}}b", "a{1}b a{42}b a{43}b"},
+		{"1{b..e}2{a..c}3", "1b2a3 1b2b3 1b2c3 1c2a3 1c2b3 1c2c3 1d2a3 1d2b3 1d2c3 1e2a3 1e2b3 1e2c3"},
+		{"as{12,32}{a..c}{2}", "as12a{2} as12b{2} as12c{2} as32a{2} as32b{2} as32c{2}"},
 	}
 
 	for _, tt := range tests {
