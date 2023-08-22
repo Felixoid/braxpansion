@@ -17,6 +17,8 @@ func TestExpand(t *testing.T) {
 		{[]byte("a{b c}d"), []byte("a{b c}d")},
 		{[]byte("a{b,c}d"), []byte("abd acd")},
 		{[]byte("a{b,c}d a{b c}d"), []byte("abd acd a{b c}d")},
+		{[]byte("a{{b,c}d a{b c}d"), []byte("a{bd a{cd a{b c}d")},
+		{[]byte("a{{b,c}}d a{b c}d"), []byte("a{b}d a{c}d a{b c}d")},
 	}
 
 	for _, tt := range tests {
@@ -32,9 +34,14 @@ func TestExpandSingle(t *testing.T) {
 	}
 
 	tests := []data{
-		{in: []byte("{2..3}"), out: []byte("2 3")},
-		{in: []byte("1{b..e}2{a..c}3"), out: []byte("1b2a3 1b2b3 1b2c3 1c2a3 1c2b3 1c2c3 1d2a3 1d2b3 1d2c3 1e2a3 1e2b3 1e2c3")},
-		{in: []byte("as{12,32}{a..c}{2}"), out: []byte("as12a{2} as12b{2} as12c{2} as32a{2} as32b{2} as32c{2}")},
+		{[]byte("{2..3}"), []byte("2 3")},
+		{[]byte("a{{2..3}}b"), []byte("a{2}b a{3}b")},
+		{[]byte("a{{{2..3}}}b"), []byte("a{{2}}b a{{3}}b")},
+		{[]byte("a{{2}}b"), []byte("a{{2}}b")},
+		{[]byte("a{{{2}}}b"), []byte("a{{{2}}}b")},
+		{[]byte("a{{1,4{2..3}}}b"), []byte("a{1}b a{42}b a{43}b")},
+		{[]byte("1{b..e}2{a..c}3"), []byte("1b2a3 1b2b3 1b2c3 1c2a3 1c2b3 1c2c3 1d2a3 1d2b3 1d2c3 1e2a3 1e2b3 1e2c3")},
+		{[]byte("as{12,32}{a..c}{2}"), []byte("as12a{2} as12b{2} as12c{2} as32a{2} as32b{2} as32c{2}")},
 	}
 
 	for _, tt := range tests {
