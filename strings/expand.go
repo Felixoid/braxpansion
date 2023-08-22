@@ -88,6 +88,13 @@ func getPair(in string) (start, stop int) {
 	depth := 0
 	cur := start
 	for {
+		if in[start+1] == '{' && in[stop+1] == '}' {
+			// we are in {{}}, and external braces aren't suppose to be expanded
+			start++
+			cur = start
+			continue
+		}
+		// look for another nested expansion
 		unpair := strings.IndexRune(in[cur+1:stop], '{')
 		if unpair != -1 {
 			cur += unpair + 1
